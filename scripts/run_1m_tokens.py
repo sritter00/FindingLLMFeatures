@@ -9,11 +9,13 @@ Usage:
 
 import sys
 from pathlib import Path
+import pickle
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 import torch
+import numpy as np
 from transformer_lens import HookedTransformer
 from manifold_analysis import extract_activations, find_manifolds, print_manifold_results
 
@@ -35,6 +37,29 @@ def main():
         target_token_count=1_000_000,
         target_layer=6
     )
+    
+    # Cluster
+    from sklearn.cluster import MiniBatchKMeans
+    print("Running MiniBatchKMeans with 500 clusters...")
+    kmeans = MiniBatchKMeans(
+        n_clusters=500,
+        batch_size=2048,
+        random_state=42,
+        n_init="auto"
+    )
+    cluster_labels = kmeans.fit_predict(X)
+    
+    # Save extraction results for later analysis
+    Path("Results").mkdir(exist_ok=True)
+    np.savez_compressed(
+        "Results/activations.npz",
+        X=X,
+        tokens_list=tokens_list,
+        cluster_labels=cluster_labels
+    )
+    with open("Results/kmeans_model.pkl", "wb") as f:
+        pickle.dump(kmeans, f)
+    print("✓ Saved activations and cluster labels to Results/")
     
     # Find manifolds
     candidates = find_manifolds(

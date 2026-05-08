@@ -13,7 +13,10 @@ Research project investigating latent features and manifolds in transformer lang
 │   └── manifold_analysis.py    # Manifold discovery utilities
 ├── scripts/
 │   ├── run_100k_tokens.py      # Quick test (1-2 min)
-│   └── run_1m_tokens.py        # Full analysis (5-10 min)
+│   ├── run_1m_tokens.py        # Full analysis (5-10 min)
+│   ├── analyze_cluster_pca.py  # Detailed PCA analysis of specific clusters
+│   └── analyze_cardinal_pc1_pc3.py  # Cardinal directions PC1 vs PC3 visualization
+├── Results/                    # Generated activations & analysis outputs (gitignored)
 ├── StarterCode.ipynb           # Interactive notebook
 └── README.md
 ```
@@ -38,6 +41,21 @@ pip install uv
 # Quick test (100k tokens, ~2-5 minutes with cpu, with cuda ~1 min)
 uv run scripts/run_100k_tokens.py
 
+
+### Analyze Clusters
+
+After running the scripts above, analyze specific 2D manifold candidates:
+
+```bash
+# Analyze cluster 138 from 1M token run (prepositions)
+uv run scripts/analyze_cluster_pca.py --cluster 138 --npz-file activations.npz
+
+# Analyze cluster 297 from 100k token run (punctuation)
+uv run scripts/analyze_cluster_pca.py --cluster 297 --npz-file activations_100k.npz
+
+# Detailed cardinal directions analysis (PC1 vs PC3)
+uv run scripts/analyze_cardinal_pc1_pc3.py --layer 4 --tokens 1000
+```
 # Full analysis (1M tokens, ~15-30 minutes with cpu, with cuda ~3-10 min [mine took ~5 min with NIVIDA 4080 Super])
 uv run scripts/run_1m_tokens.py
 ```
@@ -49,6 +67,31 @@ uv run scripts/run_1m_tokens.py
 from src.circular_pca import visualize_circular_concept
 from src.manifold_analysis import extract_activations, find_manifolds
 
+
+### `analyze_cluster_pca.py`
+Performs detailed PCA analysis on specific clusters:
+- Creates 4-panel visualization (PC1 vs PC2, variance plots, cumulative variance)
+- Displays top tokens and their frequencies
+- Calculates manifold metrics (variance, drop-off ratio)
+- Supports both 100k and 1M token datasets
+- `analyze_cluster_pca()` - Detailed PCA analysis of a specific cluster
+- `visualize_pc1_vs_pc3()` - Cardinal directions visualization
+
+## Large Files & Git
+
+Activation data files (`.npz`, `.pkl`) are **gitignored** because they exceed 100MB. This is intentional:
+
+- **Run scripts locally** to generate activation files as needed
+- **Analysis outputs** (`.png` images) are small and can be committed
+- **Results/** directory is excluded from git tracking
+
+If you need to share large files, use cloud storage or regenerate locally.
+
+### `analyze_cardinal_pc1_pc3.py`
+Specialized visualization for cardinal direction tokens (North, South, East, West):
+- Focuses on PC1 vs PC3 to show directional correlations
+- Generates scatter plots with directional color coding
+- Supports custom layer selection for exploring different depths
 months = ["January", "February", "March", ..., "December"]
 activations, pca, labels = visualize_circular_concept(model, months)
 ```
