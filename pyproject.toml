@@ -6,15 +6,17 @@ build-backend = "hatchling.build"
 name = "finding-llm-features"
 version = "0.1.0"
 description = "Finding latent features in LLM representations"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.13"
 dependencies = [
-    "torch>=2.0.0",
+    "torch==2.7.1+cu118",
     "transformer-lens>=1.0.0",
-    "datasets>=2.14.0",
+    "datasets==4.8.5",
+    "pyarrow==24.0.0",
     "scikit-learn>=1.3.0",
     "numpy>=1.24.0",
     "matplotlib>=3.7.0",
     "tqdm>=4.65.0",
+    "jupyter>=1.1.1",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -22,3 +24,6 @@ packages = ["src"]
 
 [tool.uv]
 # uv configuration for this project
+index-url = "https://pypi.org/simple"
+extra-index-url = ["https://download.pytorch.org/whl/cu118"]
+index-strategy = "unsafe-best-match"

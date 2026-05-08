@@ -35,10 +35,10 @@ pip install uv
 ### Run Scripts
 
 ```bash
-# Quick test (100k tokens, ~1-2 minutes)
+# Quick test (100k tokens, ~2-5 minutes with cpu, with cuda ~1 min)
 uv run scripts/run_100k_tokens.py
 
-# Full analysis (1M tokens, ~5-10 minutes)
+# Full analysis (1M tokens, ~15-30 minutes with cpu, with cuda ~3-10 min [mine took ~5 min with NIVIDA 4080 Super])
 uv run scripts/run_1m_tokens.py
 ```
 

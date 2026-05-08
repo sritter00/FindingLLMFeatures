@@ -79,3 +79,28 @@ def visualize_circular_concept(
     plt.show()
     
     return activation_matrix, pca, concepts
+
+def visualize_cardinal_directions(
+    model: HookedTransformer,
+    target_layer: int = 6,
+    save_path: str | None = None,
+) -> tuple[np.ndarray, PCA, list[str]]:
+    """
+    Visualize cardinal directions (North, East, South, West) in activation space.
+    
+    Args:
+        model: HookedTransformer model instance
+        target_layer: Which transformer layer to analyze
+        save_path: Optional path to save the figure
+    
+    Returns:
+        activation_matrix, pca_model, concept_labels
+    """
+    directions = ["North", "East", "South", "West"]
+    return visualize_circular_concept(
+        model,
+        directions,
+        prefix="The direction is",
+        target_layer=target_layer,
+        save_path=save_path
+    )

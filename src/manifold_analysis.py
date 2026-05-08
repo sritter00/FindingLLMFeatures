@@ -57,8 +57,14 @@ def extract_activations(
         layer_acts = cache[hook_name][0].cpu().numpy()
         str_tokens = model.to_str_tokens(tokens[0])
         
-        activation_buffer.extend(layer_acts[1:])
-        token_string_buffer.extend(str_tokens[1:])
+        seen_tokens = set()
+        for idx in range(1, len(str_tokens)):
+            tok = str_tokens[idx].strip()  # Remove leading/trailing spaces
+            if tok in seen_tokens:
+                continue
+            seen_tokens.add(tok)
+            activation_buffer.append(layer_acts[idx])
+            token_string_buffer.append(tok)
         
         if len(activation_buffer) >= target_token_count:
             break
@@ -121,16 +127,17 @@ def find_manifolds(
         drop_off = var[1] / (var[2] + 1e-9)
         
         if variance_in_2d > variance_threshold and drop_off > drop_off_threshold:
+            # Get unique tokens to avoid duplicates in samples
+            unique_tokens = np.unique(cluster_tokens)
+            sample_size = min(10, len(unique_tokens))
+            sample = np.random.choice(unique_tokens, sample_size, replace=False).tolist()
+            
             manifold_candidates.append({
                 'cluster_id': cluster_id,
                 'size': len(cluster_acts),
                 'var_2d': variance_in_2d,
                 'drop_off': drop_off,
-                'sample_tokens': np.random.choice(
-                    cluster_tokens,
-                    min(10, len(cluster_tokens)),
-                    replace=False
-                ).tolist()
+                'sample_tokens': sample
             })
     
     manifold_candidates.sort(key=lambda x: x['drop_off'], reverse=True)

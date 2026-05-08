@@ -13,13 +13,21 @@ from pathlib import Path
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
+import torch
 from transformer_lens import HookedTransformer
 from manifold_analysis import extract_activations, find_manifolds, print_manifold_results
 
 
 def main():
+    # Detect CUDA
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"Using device: {device}")
+    if device == "cuda":
+        print(f"GPU: {torch.cuda.get_device_name()}")
+        print(f"CUDA version: {torch.version.cuda}")
+    
     print("Loading GPT-2 Small...")
-    model = HookedTransformer.from_pretrained("gpt2-small")
+    model = HookedTransformer.from_pretrained("gpt2-small", device=device)
     
     # Extract activations
     X, tokens_list = extract_activations(
