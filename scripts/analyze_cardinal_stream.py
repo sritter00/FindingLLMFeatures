@@ -219,7 +219,7 @@ def main():
     X, tokens_list = find_cardinal_directions_batch(
         model,
         target_token_count=1_000,  # Collect 1k cardinal direction tokens
-        target_layer=4,
+        target_layer=4 ,
         batch_size=16  # Process 16 texts at once
     )
     
