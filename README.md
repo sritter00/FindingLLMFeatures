@@ -1,7 +1,9 @@
 # Discovering Multi-Dimensional Geometric Structures in LLM Feature Space
 
 **Name:** Shane Ritter
+
 **Topic:** Interpretability / Mechanistic Geometry
+
 **Target Model:** GPT-2 Small
 
 ---
